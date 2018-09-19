@@ -1,0 +1,4 @@
+/composer-install.sh
+/composer.phar
+/composer.lock
+/vendor/
