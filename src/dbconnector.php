@@ -1,7 +1,8 @@
 <?php
-if (!defined('F__IS_INDEX')) throw new Exception('Sorry, wrong include, try hack another way!');
 
-class fsf_db extends fsf_base{
+namespace dsda\dbconnector;
+
+class dbconnector {
 
 	private $link = NULL;
 
@@ -13,28 +14,28 @@ class fsf_db extends fsf_base{
 	// конструктор
 	function __construct() {
 		
-		$extract = extract($GLOBALS['fsf_classes'], EXTR_REFS);
+		$this->config = new dsda\config();
 		
-		$dbtype = $fsf_config->get('dbtype');
+		$dbtype = $this->config->get('dbtype');
 		if (!in_array($dbtype, array('mysql','sqlite'))) {
-			throw new Exception('DB Type in config has error!', 0);  // root namespace need because we in SPCC namespace
+			throw new \Exception('DB Type in config has error!', 0);  // root namespace need  
 		};
-		$fsf_config->get('dbconfig');
+		$this->config->get('dbconfig');
 
 
 		switch($dbtype) {
 			case 'mysql':
-				include($fsf_config->get('path').'/gears/db.extensions/db.mysql.php');		// SQLite extends
+				include($this->config->get('path').'/gears/db.extensions/db.mysql.php');		// SQLite extends
 				$this->connectInstance = new dbMysqlClass();
 				break;
 			case 'sqlite':
-				include($fsf_config->get('path').'/gears/db.extensions/db.sqlite.php');	// MySQL extends
+				include($this->config->get('path').'/gears/db.extensions/db.sqlite.php');	// MySQL extends
 				$this->connectInstance = new dbSqliteClass();
 				break;
 			default:
 				throw new Exception('DB Type in config has error!', 0);
 		}
-		$this->link = $this->connectInstance->connect($fsf_config->get('dbconfig'));
+		$this->link = $this->connectInstance->connect($this->config->get('dbconfig'));
 
 	}
 
@@ -89,7 +90,7 @@ class fsf_db extends fsf_base{
 
 		extract($GLOBALS['fsf_classes'], EXTR_REFS);
 		
-		if ($fsf_config->get('debug')) {
+		if ($this->config->get('debug')) {
 			$this->querysLog[] = $query;
 		}
 
@@ -98,7 +99,7 @@ class fsf_db extends fsf_base{
 		$pureQuery = $this->uncommentSQL($query);
 
 
-		if ($fsf_config->get('debug')==true) { $this->callsDebug[]=array("hash"=>md5($pureQuery),'query'=>str_replace("\t","",$query)); }
+		if ($this->config->get('debug')==true) { $this->callsDebug[]=array("hash"=>md5($pureQuery),'query'=>str_replace("\t","",$query)); }
 
 		// кеширование
 		if (isset($this->cache[md5($pureQuery)]) && in_array($type,array('SELECT', 'SHOW'))) {
@@ -133,7 +134,7 @@ class fsf_db extends fsf_base{
 			// увеличиваем счетчик запросов
 			$this->callsCount++;
 			// если дебаг включен то добавляем запрос в лог
-			if ($fsf_config->get('debug')==true) { $this->callsDebug[]=$query; }
+			if ($this->config->get('debug')==true) { $this->callsDebug[]=$query; }
 		} catch(PDOException $e) {
 			throw new Exception($e -> getMessage()."\n".$query, 0);  // root namespace need because we in SPCC namespace
 		}

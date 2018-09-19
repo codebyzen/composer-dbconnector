@@ -14,12 +14,13 @@
     ],
     "require": {
 		"php": ">=5.5",
-		"ext-pdo": ">=1.0"
+		"ext-pdo": ">=1.0",
+		"dsda/config": ">=0.1"
     },
     "autoload": {
         "files": ["src/dbconnector.php"],
         "psr-4": {
-            "DBConnector\\": "src/"
+            "dsda\\dbconnector\\": "src/"
         }
     }
 }
