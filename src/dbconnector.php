@@ -11,7 +11,6 @@ class dbconnector {
 	private $querysLog;
 	private $cache = array(); // local cache
 
-	// конструктор
 	function __construct() {
 		
 		$this->config = new dsda\config();
@@ -85,7 +84,6 @@ class dbconnector {
 
 	}
 
-	// простой запрос к базе
 	function query($query,$cache=false,$asArray=false) {
 
 		extract($GLOBALS['fsf_classes'], EXTR_REFS);
@@ -94,35 +92,31 @@ class dbconnector {
 			$this->querysLog[] = $query;
 		}
 
-		// разбираем запрос
 		$type = $this->parseQuery($query);
 		$pureQuery = $this->uncommentSQL($query);
 
 
 		if ($this->config->get('debug')==true) { $this->callsDebug[]=array("hash"=>md5($pureQuery),'query'=>str_replace("\t","",$query)); }
 
-		// кеширование
 		if (isset($this->cache[md5($pureQuery)]) && in_array($type,array('SELECT', 'SHOW'))) {
 			return $this->cache[md5($pureQuery)];
 		}
 
 		if ($this->link==NULL) {
-			throw new Exception('No DB link, connect first! ('.$query.')', 0);  // root namespace need because we in SPCC namespace
+			throw new \Exception('No DB link, connect first! ('.$query.')', 0);  // root namespace need
 		}
 
-		// выполняем запрос
 		try {
 
 			$result=$this->link->query($query);
 
-			// получаем результаты
 			if (in_array($type,array('SELECT', 'SHOW'))) {
 				if ($asArray==true) {
-					$result->setFetchMode(\PDO::FETCH_ASSOC);	  // root namespace need because we in SPCC namespace
+					$result->setFetchMode(\PDO::FETCH_ASSOC);	  // root namespace need
 				} else {
-					$result->setFetchMode(\PDO::FETCH_OBJ);	  // root namespace need because we in SPCC namespace
+					$result->setFetchMode(\PDO::FETCH_OBJ);	  // root namespace 
 				}
-				//TODO: если в запросе есть INTO OUTFILE то $result->fetch() бросает ошибку т.к. нечего возвращать надо научиться ловить пустой результат
+				//TODO: if request have INTO OUTFILE then $result->fetch() catch ecxeption becouse result is empty
 				while($row = $result->fetch()) {
 					$res[]=$row;
 				}
@@ -131,14 +125,11 @@ class dbconnector {
 				$res=$this->link->lastInsertId();
 			}
 
-			// увеличиваем счетчик запросов
 			$this->callsCount++;
-			// если дебаг включен то добавляем запрос в лог
 			if ($this->config->get('debug')==true) { $this->callsDebug[]=$query; }
 		} catch(PDOException $e) {
-			throw new Exception($e -> getMessage()."\n".$query, 0);  // root namespace need because we in SPCC namespace
+			throw new \Exception($e -> getMessage()."\n".$query, 0);  // root namespace need 
 		}
-		// кеширование
 		if ($cache==true) $this->cache[md5($pureQuery)] = (isset($res[0])) ? $res : false;
 		return (isset($res)) ? $res : false;
 	}
