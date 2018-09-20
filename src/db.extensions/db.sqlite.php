@@ -7,7 +7,7 @@ class dbSqliteClass {
 
 	private $link = NULL;
 
-
+	
 	function connect($dbConfig) {
 		try {
 			if ($dbConfig['dbpassword']!=='' && $dbConfig['dbenctype']!=='') {

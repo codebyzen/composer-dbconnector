@@ -11,24 +11,25 @@ class dbconnector {
 	private $querysLog;
 	private $cache = array(); // local cache
 
-	function __construct() {
+	function __construct($config) {
 		
-		$this->config = new \dsda\config\config();
-		
+		$this->config = $config;
+
 		$dbtype = $this->config->get('dbtype');
 		if (!in_array($dbtype, array('mysql','sqlite'))) {
 			throw new \Exception('DB Type in config has error!', 0);  // root namespace need  
 		};
-		$this->config->get('dbconfig');
-
 
 		switch($dbtype) {
 			case 'mysql':
-				include($this->config->get('path').'/gears/db.extensions/db.mysql.php');		// SQLite extends
+				include(dirname(__FILE__).'/db.extensions/db.mysql.php');		// MySQL extends
 				$this->connectInstance = new dbMysqlClass();
 				break;
 			case 'sqlite':
-				include($this->config->get('path').'/gears/db.extensions/db.sqlite.php');	// MySQL extends
+				include(dirname(__FILE__).'/db.extensions/db.sqlite.php');	// SQLite extends
+				
+				$this->checkSqliteFolder();
+				
 				$this->connectInstance = new dbSqliteClass();
 				break;
 			default:
@@ -41,6 +42,13 @@ class dbconnector {
 
 	function __destruct() {
 		$this->link = NULL;
+	}
+
+	function checkSqliteFolder(){
+		$dbconfig = $this->config->get('dbconfig');
+		$dbconfig['dbpath'] = dirname(__FILE__).'/'.$dbconfig['dbpath'];
+		if (!file_exists(dirname(__FILE__).'/data')) mkdir(dirname(__FILE__).'/data');
+		$this->config->set('dbconfig', $dbconfig);
 	}
 
 
@@ -86,8 +94,6 @@ class dbconnector {
 
 	function query($query,$cache=false,$asArray=false) {
 
-		extract($GLOBALS['fsf_classes'], EXTR_REFS);
-		
 		if ($this->config->get('debug')) {
 			$this->querysLog[] = $query;
 		}
