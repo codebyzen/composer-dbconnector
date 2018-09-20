@@ -15,7 +15,9 @@
     "require": {
 		"php": ">=5.5",
 		"dsda/config": "dev-master"
-    },
+	},
+	"prefer-stable": true,
+    "minimum-stability": "dev",
     "autoload": {
         "files": ["src/dbconnector.php"],
         "psr-4": {
