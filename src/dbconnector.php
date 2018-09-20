@@ -13,7 +13,7 @@ class dbconnector {
 
 	function __construct() {
 		
-		$this->config = new dsda\config();
+		$this->config = new \dsda\config\config();
 		
 		$dbtype = $this->config->get('dbtype');
 		if (!in_array($dbtype, array('mysql','sqlite'))) {
