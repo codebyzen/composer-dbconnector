@@ -19,7 +19,7 @@
     "autoload": {
         "files": ["src/dbconnector.php"],
         "psr-4": {
-            "dsda\\dbconnector\\": "src/"
+            "dbconnector\\": "src/"
         }
     }
 }
