@@ -4,18 +4,17 @@
     "description": "DBConnector is library to connect app with mysql or sqlite databases via PDO",
     "keywords": ["framework", "database", "mysql", "sqlite", "sql", "web service"],
     "homepage": "http://dsda.ru/",
-    "license": "MIT",
+    "license": "CC-BY-4.0",
     "authors": [
         {
             "name": "Eugene Che",
             "email": "dsda@dsda.ru",
-            "homepage": "https://github.com/dsda"
+            "homepage": "https://github.com/ugputu"
         }
     ],
     "require": {
 		"php": ">=5.5",
-		"ext-pdo": ">=1.0",
-		"dsda/config": ">=0.1"
+		"dsda/config": ">=1.0.1"
     },
     "autoload": {
         "files": ["src/dbconnector.php"],
