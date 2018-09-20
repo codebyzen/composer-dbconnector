@@ -160,6 +160,21 @@ class dbconnector {
 		return $pdoLink->lastInsertId();
 	}
 
+	function tableExist($tblName) {
+		if ($this->config->get('dbtype')=='sqlite') {
+			$query = "SELECT name FROM sqlite_master WHERE type='table' AND name='".$tblName."';";
+		} elseif($this->config->get('dbconfig')=='mysql') {
+			$dbconfig = $this->config->get('dbconfig');
+			$query = "SELECT * FROM information_schema.tables WHERE table_schema = '".$dbconfig['dbname']."' AND table_name = '".$tblName."' LIMIT 1;";
+		}
+		$result = $this->query($query);
+		if ($result!==false && $result!==NULL) {
+			$res = true;
+		} else {
+			$res = false;
+		}
+		return $res;
+	}
 
 	function get_value($var) {
 		return $this->$var;
