@@ -113,29 +113,28 @@ class dbconnector {
 		}
 
 		try {
-
 			$result=$this->link->query($query);
-
-			if (in_array($type,array('SELECT', 'SHOW'))) {
-				if ($asArray==true) {
-					$result->setFetchMode(\PDO::FETCH_ASSOC);	  // root namespace need
-				} else {
-					$result->setFetchMode(\PDO::FETCH_OBJ);	  // root namespace 
-				}
-				//TODO: if request have INTO OUTFILE then $result->fetch() catch ecxeption becouse result is empty
-				while($row = $result->fetch()) {
-					$res[]=$row;
-				}
-				if (isset($res) && ($res==NULL || $res==false || !isset($res[0]) || $res[0]==false)) $res = false;
-			} elseif(in_array($type,array('INSERT'))) {
-				$res=$this->link->lastInsertId();
-			}
-
-			$this->callsCount++;
-			if ($this->config->get('debug')==true) { $this->callsDebug[]=$query; }
 		} catch(PDOException $e) {
 			throw new \Exception($e -> getMessage()."\n".$query, 0);  // root namespace need 
 		}
+		if (in_array($type,array('SELECT', 'SHOW'))) {
+			if ($asArray==true) {
+				$result->setFetchMode(\PDO::FETCH_ASSOC);	  // root namespace need
+			} else {
+				$result->setFetchMode(\PDO::FETCH_OBJ);	  // root namespace 
+			}
+			//TODO: if request have INTO OUTFILE then $result->fetch() catch ecxeption becouse result is empty
+			while($row = $result->fetch()) {
+				$res[]=$row;
+			}
+			if (isset($res) && ($res==NULL || $res==false || !isset($res[0]) || $res[0]==false)) $res = false;
+		} elseif(in_array($type,array('INSERT'))) {
+			$res=$this->link->lastInsertId();
+		}
+
+		$this->callsCount++;
+		if ($this->config->get('debug')==true) { $this->callsDebug[]=$query; }
+		
 		if ($cache==true) $this->cache[md5($pureQuery)] = (isset($res[0])) ? $res : false;
 		return (isset($res)) ? $res : false;
 	}
