@@ -15,12 +15,12 @@ class dbconnector {
 		
 		$this->config = new \dsda\config\config();
 
-		$dbtype = $this->config->get('dbtype');
-		if (!in_array($dbtype, array('mysql','sqlite'))) {
+		$dbconfig = $this->config->get('dbconfig');
+		if (!in_array($dbconfig['dbtype'], array('mysql','sqlite'))) {
 			throw new \Exception('DB Type in config has error!', 0);  // root namespace need  
 		};
 
-		switch($dbtype) {
+		switch($dbconfig['dbtype']) {
 			case 'mysql':
 				include(dirname(__FILE__).'/db.extensions/db.mysql.php');		// MySQL extends
 				$this->connectInstance = new dbMysqlClass();
@@ -35,7 +35,7 @@ class dbconnector {
 			default:
 				throw new Exception('DB Type in config has error!', 0);
 		}
-		$this->link = $this->connectInstance->connect($this->config->get('dbconfig'));
+		$this->link = $this->connectInstance->connect($dbconfig);
 
 	}
 
@@ -160,10 +160,11 @@ class dbconnector {
 	}
 
 	function tableExist($tblName) {
-		if ($this->config->get('dbtype')=='sqlite') {
-			$query = "SELECT name FROM sqlite_master WHERE type='table' AND name='".$tblName."';";
-		} elseif($this->config->get('dbconfig')=='mysql') {
-			$dbconfig = $this->config->get('dbconfig');
+		$dbconfig = $this->config->get('dbconfig');
+		if ($dbconfig['dbtype']=='sqlite') {
+			$query = "SELECT name FROM `sqlite_master` WHERE type='table' AND name='".$tblName."';";
+		} elseif($dbconfig['dbtype']=='mysql') {
+			
 			$query = "SELECT * FROM information_schema.tables WHERE table_schema = '".$dbconfig['dbname']."' AND table_name = '".$tblName."' LIMIT 1;";
 		}
 		$result = $this->query($query);
