@@ -11,9 +11,9 @@ class dbconnector {
 	private $querysLog;
 	private $cache = array(); // local cache
 
-	function __construct($config) {
+	function __construct() {
 		
-		$this->config = $config;
+		$this->config = new \dsda\config\config();
 
 		$dbtype = $this->config->get('dbtype');
 		if (!in_array($dbtype, array('mysql','sqlite'))) {
